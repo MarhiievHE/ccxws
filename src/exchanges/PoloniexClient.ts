@@ -100,8 +100,7 @@ export class PoloniexClient extends BasicClient {
 
             if (msg.event === "pong") return;
 
-            if (msg.event === "error")
-                throw new Error(msg.message);
+            if (msg.event === "error") throw new Error(msg.message);
 
             if (msg.data?.length === 0) return;
 
