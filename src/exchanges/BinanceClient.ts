@@ -58,6 +58,6 @@ export class BinanceClient extends BinanceBase {
             l2snapshotSpeed,
             batchTickers,
         });
-        this.parent = parent;
+        this.parent = parent as BinanceMultiClient;
     }
 }
