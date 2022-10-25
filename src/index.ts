@@ -124,7 +124,10 @@ export {
  */
 export default {
     Bibox: BiboxClient,
-    Binance: BinanceClient,
+    Binance: {
+        BinanceClient,
+        BinanceMultiClient,
+    },
     BinanceFuturesCoinM: BinanceFuturesCoinmClient,
     BinanceFuturesUsdtM: BinanceFuturesUsdtmClient,
     BinanceJe: BinanceJeClient,
