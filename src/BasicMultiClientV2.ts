@@ -168,22 +168,22 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
 
     protected _get_free_client() {
         let cond: boolean = false;
-        let client: Promise<IClient>;
+        let client: clientStore;
         if (this._socket_clients.length > 0) {
             for (const row of this._socket_clients) {
                 if (row.count < this._connect_limit) {
-                    client = row.client;
+                    client = row;
                     cond = true;
                     break;
                 }
             }
             if (cond) return client;
         }
-        client = this._createBasicClientThrottled({ auth: this.auth });
-        this._socket_clients.push({
-            client,
+        client = {
+            client: this._createBasicClientThrottled({ auth: this.auth }),
             count: 0,
-        });
+        };
+        this._socket_clients.push();
         return client;
     }
 
@@ -194,18 +194,18 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
     ) {
         try {
             const remote_id = market.id;
-            let client = null;
+            let clientRow = null;
 
             // construct a client
             if (!map.has(remote_id)) {
                 // getClient
-                client = this._get_free_client();
+                clientRow = this._get_free_client();
                 // we MUST store the promise in here otherwise we will stack up duplicates
-                map.set(remote_id, client);
+                map.set(remote_id, clientRow.client);
             }
 
             // wait for client to be made!
-            client = await map.get(remote_id);
+            const client = await map.get(remote_id) as any;
 
             if (subscriptionType === SubscriptionType.ticker) {
                 const subscribed = client.subscribeTicker(market);
@@ -213,6 +213,7 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
                     client.on("ticker", (ticker, market) => {
                         this.emit("ticker", ticker, market);
                     });
+                    clientRow.count++;
                 }
             }
 
@@ -222,6 +223,7 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
                     client.on("candle", (candle, market) => {
                         this.emit("candle", candle, market);
                     });
+                    clientRow.count++;
                 }
             }
 
@@ -231,6 +233,7 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
                     client.on("trade", (trade, market) => {
                         this.emit("trade", trade, market);
                     });
+                    clientRow.count++;
                 }
             }
 
@@ -243,6 +246,7 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
                     client.on("l2snapshot", (l2snapshot, market) => {
                         this.emit("l2snapshot", l2snapshot, market);
                     });
+                    clientRow.count++;
                 }
             }
 
@@ -252,6 +256,7 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
                     client.on("l2snapshot", (l2snapshot, market) => {
                         this.emit("l2snapshot", l2snapshot, market);
                     });
+                    clientRow.count++;
                 }
             }
         } catch (ex) {
