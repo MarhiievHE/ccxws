@@ -207,10 +207,12 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
                 clientRow = this._get_free_client();
                 // we MUST store the promise in here otherwise we will stack up duplicates
                 map.set(remote_id, clientRow);
+            } else {
+                clientRow = map.get(remote_id);
             }
 
             // wait for client to be made!
-            const client = (await map.get(remote_id).client) as any;
+            const client = await clientRow.client;
 
             if (subscriptionType === SubscriptionType.ticker) {
                 const subscribed = client.subscribeTicker(market);
