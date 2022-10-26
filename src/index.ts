@@ -46,7 +46,7 @@ import { HuobiJapanClient } from "./exchanges/HuobiJapanClient";
 import { HuobiKoreaClient } from "./exchanges/HuobiKoreaClient";
 import { HuobiSwapsClient } from "./exchanges/HuobiSwapsClient";
 import { KrakenClient } from "./exchanges/KrakenClient";
-import { KucoinClient } from "./exchanges/KucoinClient";
+import { KucoinClient, KucoinMultiClient } from "./exchanges/KucoinClient";
 import { LedgerXClient } from "./exchanges/LedgerXClient";
 import { LiquidClient } from "./exchanges/LiquidClient";
 import { OkexClient } from "./exchanges/OkexClient";
@@ -108,6 +108,7 @@ export {
     HuobiJapanClient,
     HuobiKoreaClient,
     KucoinClient,
+    KucoinMultiClient,
     KrakenClient,
     LedgerXClient,
     LiquidClient,
@@ -155,7 +156,10 @@ export default {
     HuobiSwaps: HuobiSwapsClient,
     HuobiJapan: HuobiJapanClient,
     HuobiKorea: HuobiKoreaClient,
-    Kucoin: KucoinClient,
+    Kucoin: {
+        KucoinClient,
+        KucoinMultiClient,
+    },
     Kraken: KrakenClient,
     LedgerX: LedgerXClient,
     Liquid: LiquidClient,
