@@ -32,7 +32,7 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
     public auth: any;
 
     protected _socket_clients: Array<clientStore>;
-    protected _pair_clients: Map<string, Promise<IClient>>;
+    protected _pair_clients: Map<string, clientStore>;
     public _connect_limit: number;
 
     constructor() {
@@ -55,14 +55,14 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
     }
 
     public async reconnect() {
-        for (const client of Array.from(this._pair_clients.values())) {
+        for (const { client } of Array.from(this._pair_clients.values())) {
             (await client).reconnect();
             await wait(this.throttleMs); // delay the reconnection throttling
         }
     }
 
     public async close(): Promise<void> {
-        for (const client of Array.from(this._pair_clients.values())) {
+        for (const { client } of Array.from(this._pair_clients.values())) {
             (await client).close();
         }
     }
@@ -80,8 +80,9 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
     public async unsubscribeTicker(market: Market) {
         if (!this.hasTickers) return;
         if (this._pair_clients.has(market.id)) {
-            const client = await this._pair_clients.get(market.id);
+            const client = await this._pair_clients.get(market.id).client;
             client.unsubscribeTicker(market);
+            this._pair_clients.get(market.id).count--;
         }
     }
 
@@ -93,8 +94,9 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
     public async unsubscribeCandles(market: Market) {
         if (!this.hasCandles) return;
         if (this._pair_clients.has(market.id)) {
-            const client = await this._pair_clients.get(market.id);
+            const client = await this._pair_clients.get(market.id).client;
             client.unsubscribeCandles(market);
+            this._pair_clients.get(market.id).count--;
         }
     }
 
@@ -106,8 +108,9 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
     public async unsubscribeTrades(market: Market) {
         if (!this.hasTrades) return;
         if (this._pair_clients.has(market.id)) {
-            const client = await this._pair_clients.get(market.id);
+            const client = await this._pair_clients.get(market.id).client;
             client.unsubscribeTrades(market);
+            this._pair_clients.get(market.id).count--;
         }
     }
 
@@ -119,8 +122,9 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
     public async unsubscribeLevel2Updates(market: Market) {
         if (!this.hasLevel2Updates) return;
         if (this._pair_clients.has(market.id)) {
-            const client = await this._pair_clients.get(market.id);
+            const client = await this._pair_clients.get(market.id).client;
             client.unsubscribeLevel2Updates(market);
+            this._pair_clients.get(market.id).count--;
         }
     }
 
@@ -132,8 +136,9 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
     public async unsubscribeLevel2Snapshots(market: Market) {
         if (!this.hasLevel2Snapshots) return;
         if (this._pair_clients.has(market.id)) {
-            const client = await this._pair_clients.get(market.id);
+            const client = await this._pair_clients.get(market.id).client;
             client.unsubscribeLevel2Snapshots(market);
+            this._pair_clients.get(market.id).count--;
         }
     }
 
@@ -189,7 +194,7 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
 
     protected async _subscribe(
         market: Market,
-        map: Map<string, Promise<IClient>>,
+        map: Map<string, clientStore>,
         subscriptionType: SubscriptionType,
     ) {
         try {
@@ -201,11 +206,11 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
                 // getClient
                 clientRow = this._get_free_client();
                 // we MUST store the promise in here otherwise we will stack up duplicates
-                map.set(remote_id, clientRow.client);
+                map.set(remote_id, clientRow);
             }
 
             // wait for client to be made!
-            const client = await map.get(remote_id) as any;
+            const client = (await map.get(remote_id).client) as any;
 
             if (subscriptionType === SubscriptionType.ticker) {
                 const subscribed = client.subscribeTicker(market);
