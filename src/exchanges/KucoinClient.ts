@@ -26,6 +26,7 @@ import { throttle } from "../flowcontrol/Throttle";
 import { Level3Point } from "../Level3Point";
 import { Level3Snapshot } from "../Level3Snapshot";
 import { NotImplementedFn } from "../NotImplementedFn";
+import { connect } from "http2";
 
 export type KucoinClientOptions = ClientOptions & {
     sendThrottleMs?: number;
@@ -46,8 +47,8 @@ export class KucoinMultiClient extends BasicMultiClientV2 {
     public candlePeriod: CandlePeriod;
 
     constructor(options: KucoinClientOptions = {}) {
-        super();
-        this._connect_limit = 300;
+        const sockerPairLimit = 300;
+        super({ sockerPairLimit });
         this.options = options;
         this.hasTickers = true;
         this.hasTrades = true;

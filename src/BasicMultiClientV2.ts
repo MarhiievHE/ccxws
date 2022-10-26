@@ -33,15 +33,15 @@ export abstract class BasicMultiClientV2 extends EventEmitter {
 
     protected _socket_clients: Array<clientStore>;
     protected _pair_clients: Map<string, clientStore>;
-    public _connect_limit: number;
+    public _connect_limit: number = Infinity;
 
-    constructor() {
+    constructor({ sockerPairLimit = Infinity }) {
         super();
         this._socket_clients = [];
         this._pair_clients = new Map();
 
-        this._connect_limit = Infinity;
-        if (this._connect_limit === Infinity) throw new Error("You must setup ex limit per socket");
+        if (sockerPairLimit === Infinity) throw new Error("You must setup ex limit per socket");
+        this._connect_limit = sockerPairLimit;
 
         this.hasTickers = false;
         this.hasTrades = false;

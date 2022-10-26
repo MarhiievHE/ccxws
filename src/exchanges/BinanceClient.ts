@@ -6,8 +6,8 @@ export class BinanceMultiClient extends BasicMultiClientV2 {
     public options: BinanceClientOptions;
 
     constructor(options: BinanceClientOptions = {}) {
-        super();
-        this._connect_limit = 1000;
+        const sockerPairLimit = 1000;
+        super({ sockerPairLimit });
         this.throttleMs = 100;
         this.options = options;
         this.hasTickers = true;
