@@ -26,7 +26,6 @@ import { throttle } from "../flowcontrol/Throttle";
 import { Level3Point } from "../Level3Point";
 import { Level3Snapshot } from "../Level3Snapshot";
 import { NotImplementedFn } from "../NotImplementedFn";
-import { connect } from "http2";
 
 export type KucoinClientOptions = ClientOptions & {
     sendThrottleMs?: number;
