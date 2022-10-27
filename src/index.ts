@@ -30,7 +30,7 @@ import { BitstampClient } from "./exchanges/BitstampClient";
 import { BittrexClient } from "./exchanges/BittrexClient";
 import { BybitClient } from "./exchanges/BybitClient";
 import { CexClient } from "./exchanges/CexClient";
-import { CoinbaseProClient } from "./exchanges/CoinbaseProClient";
+import { CoinbaseProClient, CoinbaseProMultiClient } from "./exchanges/CoinbaseProClient";
 import { CoinexClient } from "./exchanges/CoinexClient";
 import { DeribitClient } from "./exchanges/DeribitClient";
 import { DigifinexClient } from "./exchanges/DigifinexClient";
@@ -93,6 +93,7 @@ export {
     BybitClient,
     CexClient,
     CoinbaseProClient,
+    CoinbaseProMultiClient,
     CoinexClient,
     DeribitClient,
     DigifinexClient,
@@ -141,7 +142,10 @@ export default {
     Bittrex: BittrexClient,
     Bybit: BybitClient,
     Cex: CexClient,
-    CoinbasePro: CoinbaseProClient,
+    CoinbasePro: {
+        CoinbaseProClient,
+        CoinbaseProMultiClient,
+    },
     Coinex: CoinexClient,
     Deribit: DeribitClient,
     Digifinex: DigifinexClient,
