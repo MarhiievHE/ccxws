@@ -22,7 +22,6 @@ export class MexcClient extends BasicClient {
     constructor() {
         super("wss://wbs.mexc.com/raw/ws", "Mexc", undefined, 60 * 1000);
 
-        this.hasTickers = true;
         this.hasTrades = true;
         this.hasLevel2Updates = true;
     }
