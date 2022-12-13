@@ -32,37 +32,37 @@ export class MexcClient extends BasicClient {
     protected _sendSubTrades(remote_id: string) {
         this._wss.send(
             JSON.stringify({
-                "op": "sub.deal",
-                "symbol": remote_id
-            })
-        )
+                op: "sub.deal",
+                symbol: remote_id,
+            }),
+        );
     }
 
     protected _sendUnsubTrades(remote_id: string) {
         this._wss.send(
             JSON.stringify({
-                "op": "unsub.deal",
-                "symbol": remote_id
-            })
-        )
+                op: "unsub.deal",
+                symbol: remote_id,
+            }),
+        );
     }
 
     protected _sendSubLevel2Updates(remote_id: string) {
         this._wss.send(
             JSON.stringify({
-                "op": "sub.depth",
-                "symbol": remote_id
-            })
-        )
+                op: "sub.depth",
+                symbol: remote_id,
+            }),
+        );
     }
 
     protected _sendUnsubLevel2Updates(remote_id: string) {
         this._wss.send(
             JSON.stringify({
-                "op": "unsub.depth",
-                "symbol": remote_id
-            })
-        )
+                op: "unsub.depth",
+                symbol: remote_id,
+            }),
+        );
     }
 
     protected _sendSubCandles = NotImplementedFn;
@@ -137,20 +137,20 @@ export class MexcClient extends BasicClient {
     }
 
     protected _onLevel2Update(data, market): void {
-        const asks = data.asks?.map((ask) => new Level2Point(ask.p, ask.q)) ?? [];
-        const bids = data.bids?.map((bid) => new Level2Point(bid.p, bid.q)) ?? [];
+        const asks = data.asks?.map(ask => new Level2Point(ask.p, ask.q)) ?? [];
+        const bids = data.bids?.map(bid => new Level2Point(bid.p, bid.q)) ?? [];
         const update = new Level2Update({
             exchange: this.name,
             base: market.base,
             quote: market.quote,
             asks,
-            bids
-        })
+            bids,
+        });
         this.emit("l2update", update, market);
     }
 
     protected _onDealUpdate(data, market) {
-        data.forEach((deal) => {
+        data.forEach(deal => {
             const trade = new Trade({
                 exchange: "Mexc",
                 base: market.base,
@@ -158,8 +158,8 @@ export class MexcClient extends BasicClient {
                 timestamp: deal.t,
                 price: deal.p,
                 side: deal.T === 1 ? "bid" : "ask",
-                amount: deal.q
-            })
+                amount: deal.q,
+            });
             this.emit("trade", trade, market);
         });
     }
