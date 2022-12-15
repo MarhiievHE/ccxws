@@ -145,6 +145,7 @@ export class MexcClient extends BasicClient {
             asks,
             bids,
         });
+
         this.emit("l2update", update, market);
     }
 
@@ -156,8 +157,9 @@ export class MexcClient extends BasicClient {
                 quote: market.quote,
                 timestamp: deal.t,
                 price: deal.p,
-                side: deal.T === 1 ? "bid" : "ask",
+                side: deal.T === 1 ? "buy" : "sell",
                 amount: deal.q,
+                unix: moment(data.t).utc().valueOf(),
             });
             this.emit("trade", trade, market);
         });

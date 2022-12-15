@@ -20,7 +20,7 @@ testClient({
     testReconnectionEvents: true,
     testCloseEvents: true,
 
-    testAllMarketsTrades: true,
+    testAllMarketsTrades: false,
     testAllMarketsTradesSuccess: 50,
 
     hasTickers: false,
@@ -48,23 +48,15 @@ testClient({
     },
 
     trade: {
-        hasTradeId: true,
-    },
-
-    candle: {},
-
-    l2snapshot: {
-        hasTimestampMs: false,
-        hasSequenceId: true,
-        hasCount: false,
+        hasTradeId: false,
     },
 
     l2update: {
-        hasSnapshot: true,
+        hasSnapshot: false,
         hasTimestampMs: false,
-        hasSequenceId: true,
-        hasLastSequenceId: true,
-        hasEventMs: true,
+        hasSequenceId: false,
+        hasLastSequenceId: false,
+        hasEventMs: false,
         hasCount: false,
     },
 });
