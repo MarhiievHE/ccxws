@@ -8,7 +8,6 @@
 
 import moment from "moment";
 import { BasicClient } from "../BasicClient";
-import { ClientOptions } from "../ClientOptions";
 import { Level2Point } from "../Level2Point";
 import { Level2Update } from "../Level2Update";
 import { NotImplementedFn } from "../NotImplementedFn";

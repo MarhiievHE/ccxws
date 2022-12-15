@@ -1,7 +1,4 @@
 import { testClient } from "../TestRunner";
-import { BinanceClient } from "../../src/exchanges/BinanceClient";
-import { get } from "../../src/Https";
-import { Market } from "../../src/Market";
 import { MexcClient } from "../../src";
 
 testClient({
