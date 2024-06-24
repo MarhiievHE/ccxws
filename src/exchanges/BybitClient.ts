@@ -28,7 +28,7 @@ export class BybitClient extends BasicClient {
     protected _sendUnsubLevel3Updates = NotImplementedFn;
 
     constructor({
-        wssPath = "wss://stream.bybit.com/spot/quote/ws/v2",
+        wssPath = "wss://stream.bybit.com/spot/quote/ws/v1",
         watcherMs,
     }: BybitClientOptions = {}) {
         super(wssPath, "Bybit", undefined, watcherMs);
@@ -56,8 +56,8 @@ export class BybitClient extends BasicClient {
             JSON.stringify({
                 topic: "realtimes",
                 event: "sub",
+                symbol: remoteId,
                 params: {
-                    symbol: remoteId,
                     binary: false,
                 },
             }),
@@ -69,8 +69,8 @@ export class BybitClient extends BasicClient {
             JSON.stringify({
                 topic: "realtimes",
                 event: "cancel",
+                symbol: remoteId,
                 params: {
-                    symbol: remoteId,
                     binary: false,
                 },
             }),
@@ -82,8 +82,8 @@ export class BybitClient extends BasicClient {
             JSON.stringify({
                 topic: "trade",
                 event: "sub",
+                symbol: remoteId,
                 params: {
-                    symbol: remoteId,
                     binary: false,
                 },
             }),
@@ -106,10 +106,10 @@ export class BybitClient extends BasicClient {
     protected _sendSubLevel2Updates(remoteId: string) {
         this._wss.send(
             JSON.stringify({
-                topic: "depth",
+                topic: "diffDepth",
                 event: "sub",
+                symbol: remoteId,
                 params: {
-                    symbol: remoteId,
                     binary: false,
                 },
             }),
@@ -119,10 +119,10 @@ export class BybitClient extends BasicClient {
     protected _sendUnsubLevel2Updates(remoteId: string) {
         this._wss.send(
             JSON.stringify({
-                topic: "depth",
+                topic: "diffDepth",
                 event: "cancel",
+                symbol: remoteId,
                 params: {
-                    symbol: remoteId,
                     binary: false,
                 },
             }),
@@ -150,24 +150,26 @@ export class BybitClient extends BasicClient {
             return;
         }
 
-        if (msg.topic === "depth") {
+        if (msg.topic === "diffDepth") {
             this._onL2Update(msg);
             return;
         }
     }
 
     protected _onTicker(msg) {
-        const {
-            s, // symbol
-            t, // timestamp
-            o, // open
-            c, // close
-            h, // high
-            l, // low
-            v, // volume
-            qv, // quote volume
-            m, // change
-        } = msg.data;
+        const [
+            {
+                s, // symbol
+                t, // timestamp
+                o, // open
+                c, // close
+                h, // high
+                l, // low
+                v, // volume
+                qv, // quote volume
+                m, // change
+            },
+        ] = msg.data;
 
         const market = this._tickerSubs.get(s);
         if (!market) return;
@@ -190,14 +192,16 @@ export class BybitClient extends BasicClient {
     }
 
     protected _onTrade(msg) {
-        const { symbol } = msg.params;
-        const {
-            v, // trade ID
-            t, // timestamp
-            p, // price
-            q, // quantity
-            m, // isBuy
-        } = msg.data;
+        const { symbol } = msg;
+        const [
+            {
+                v, // trade ID
+                t, // timestamp
+                p, // price
+                q, // quantity
+                m, // isBuy
+            },
+        ] = msg.data;
 
         const market = this._tradeSubs.get(symbol);
         if (!market) return;
@@ -217,12 +221,14 @@ export class BybitClient extends BasicClient {
     }
 
     protected _onL2Update(msg) {
-        const {
-            s, // symbol
-            t, // timestamp
-            b, // bids
-            a, // asks
-        } = msg.data;
+        const [
+            {
+                s, // symbol
+                t, // timestamp
+                b, // bids
+                a, // asks
+            },
+        ] = msg.data;
 
         const bids = b.map(([price, amount]) => new Level2Point(price, amount));
         const asks = a.map(([price, amount]) => new Level2Point(price, amount));
